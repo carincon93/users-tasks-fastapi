@@ -1,6 +1,7 @@
 asyncio
+asyncpg
 db-dtypes
-fastapi
+fastapi[standard]
 google-adk
 google-auth
 google-cloud-bigquery 
@@ -11,7 +12,7 @@ pandas-gbq
 psycopg2-binary
 pydantic
 pyjwt
-pwdlib
+pwdlib[argon2]
 python-dotenv
 requests
 sqlmodel
