@@ -1,50 +1,64 @@
-from typing import Annotated
-from fastapi import APIRouter, Depends, HTTPException,status
+from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.db.main import get_session
-# from src.auth.model import User
+from src.auth.dependencies.token_bearer import AccessTokenBearer
 from src.tasks.model import TaskPublic, TaskCreate, TaskUpdate
 from src.tasks.service import TaskService
-# from src.auth.utils import get_current_active_user
 
 task_router = APIRouter()
-# get_current_active_user = Depends(get_current_active_user)
+access_token_bearer = AccessTokenBearer()
 
-# @task_router.get("/", response_model=list[TaskPublic])
-# async def find_all(session: AsyncSession = Depends(get_session), current_user: Annotated[User, get_current_active_user], completed: bool | None = None):
-#     if completed is None:
-#         tasks = TaskService(session, current_user).find_all()
-#     else:
-#         tasks = TaskService(session, current_user).completed(completed)
 
-#     return tasks
+@task_router.get("/", response_model=list[TaskPublic])
+async def find_all(
+    completed: bool = None,
+    session: AsyncSession = Depends(get_session),
+    payload: dict = Depends(access_token_bearer), 
+):
+    current_user_id = payload["sub"]
+    if completed is None:
+        return await TaskService(session, current_user_id).find_all()
+    else:
+        return await TaskService(session, current_user_id).completed(completed)
 
-# @task_router.post("/", response_model=TaskPublic)
-# async def create(session: AsyncSession = Depends(get_session), current_user: Annotated[User, get_current_active_user], task: TaskCreate):
-#     new_task = TaskService(session, current_user).create(task)
-#     return new_task
 
-# @task_router.get("/{task_id}", response_model=TaskPublic)
-# async def find_one(session: AsyncSession = Depends(get_session), current_user: Annotated[User, get_current_active_user], task_id: str):
-#     task = TaskService(session, current_user).find_one(task_id)
+@task_router.post("/", response_model=TaskPublic)
+async def create(
+    task: TaskCreate,
+    session: AsyncSession = Depends(get_session),
+    payload: dict = Depends(access_token_bearer),
+):
+    current_user_id = payload["sub"]
+    return await TaskService(session, current_user_id).create(task)
 
-#     if not task:
-#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
-    
-#     return task
 
-# @task_router.put("/{task_id}", response_model=TaskPublic)
-# async def update(session: AsyncSession = Depends(get_session), current_user: Annotated[User, get_current_active_user], task_id: str, task: TaskUpdate):
-#     task = TaskService(session, current_user).update(task_id, task)
+@task_router.get("/{task_id}", response_model=TaskPublic)
+async def find_one(
+    task_id: str,
+    session: AsyncSession = Depends(get_session),
+    payload: dict = Depends(access_token_bearer),
+):
+    current_user_id = payload["sub"]
+    return await TaskService(session, current_user_id).find_one(task_id)
 
-#     if not task:
-#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
 
-#     return task
+@task_router.put("/{task_id}", response_model=TaskPublic)
+async def update(
+    task_id: str,
+    task: TaskUpdate,
+    session: AsyncSession = Depends(get_session),
+    payload: dict = Depends(access_token_bearer),
+):
+    current_user_id = payload["sub"]
+    return await TaskService(session, current_user_id).update(task_id, task)
 
-# @task_router.delete("/{task_id}")
-# async def delete(session: AsyncSession = Depends(get_session), current_user: Annotated[User, get_current_active_user], task_id: str):
-#     status = TaskService(session, current_user).delete(task_id)
 
-#     return status
+@task_router.delete("/{task_id}")
+async def delete(
+    task_id: str,
+    session: AsyncSession = Depends(get_session),
+    payload: dict = Depends(access_token_bearer),
+):
+    current_user_id = payload["sub"]
+    return await TaskService(session, current_user_id).delete(task_id)

@@ -1,28 +1,39 @@
-from pydantic import BaseModel
 from sqlmodel import Field, SQLModel
+from typing import Optional
+from uuid import UUID, uuid4
 
 class TaskBase(SQLModel):
-    description: str = Field(nullable=False)
     title: str = Field(nullable=False)
-    completed: bool = Field(nullable=False, default=False)
+    description: str = Field(nullable=False)
+    completed: bool = Field(default=False, nullable=False)
+
 
 class Task(TaskBase, table=True):
     __tablename__ = "tasks"
-    id: str | None = Field(default=None, primary_key=True)
-    user_id: str = Field(nullable=False)
+    id: UUID = Field(
+        default_factory=uuid4, 
+        primary_key=True
+    )
+    user_id: UUID = Field(
+        foreign_key="users.id",
+        nullable=False,
+        index=True,
+    )
+
 
 class TaskCreate(TaskBase):
     pass
 
+
 class TaskPublic(SQLModel):
-    id: str
-    user_id: str
+    id: UUID
     title: str
     description: str
     completed: bool
 
-class TaskUpdate(BaseModel):
-    title: str | None = None
-    description: str | None = None
-    completed: bool | None = None
+
+class TaskUpdate(SQLModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    completed: Optional[bool] = None
 

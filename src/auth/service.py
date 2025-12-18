@@ -1,3 +1,4 @@
+from src.users.model import UserPublic
 from fastapi import Response, HTTPException, status
 from sqlmodel import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -7,9 +8,10 @@ import jwt
 import json
 
 from config import ALGORITHM, JWT_ACCESS_TOKEN_SECRET, JWT_ACCESS_TOKEN_EXPIRES_IN, JWT_REFRESH_TOKEN_SECRET, JWT_REFRESH_TOKEN_EXPIRES_IN
-from src.auth.dependencies.dependencies import AccessTokenBearer
+from src.auth.dependencies.token_bearer import AccessTokenBearer
 from src.auth.utils import create_token
-from src.users.model import User
+from src.users.model import User, UserPublic
+from src.errors import UserNotFoundError
 
 token_hash = PasswordHash.recommended()
 access_token_bearer = AccessTokenBearer()
@@ -17,6 +19,7 @@ access_token_bearer = AccessTokenBearer()
 class AuthService:
     def __init__(self, session: AsyncSession):
         self.session = session
+
 
     async def login(self, user: User) -> Response:
         access_token = create_token(
@@ -70,10 +73,13 @@ class AuthService:
         return await self.login(user)
 
 
-    async def get_current_user(self, payload: dict) -> User:
+    async def get_current_user(self, payload: dict) -> UserPublic:
         statement = select(User).where(User.id == payload.get("sub"))
         result = await self.session.execute(statement=statement)
         db_user = result.scalars().first()
+
+        if not db_user:
+            raise UserNotFoundError()
         return db_user
 
 
@@ -83,7 +89,7 @@ class AuthService:
 
     async def verify_refresh_token(self, refresh_token: str):
         try:
-            payload = jwt.decode(refresh_token, JWT_REFRESH_TOKEN_SECRET, algorithms=[ALGORITHM])
+            payload = self.decode_token(refresh_token)
             statement = select(User).where(User.id == str(payload.get("sub")))
             db_user = await self.session.execute(statement=statement)
             db_user = db_user.scalars().first()
@@ -101,4 +107,10 @@ class AuthService:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid refresh token")
 
 
+    async def decode_token(self, token: str) -> dict | None:
+        try:
+            return jwt.decode(token, self.secret, algorithms=[ALGORITHM])
+        except InvalidTokenError as err:
+            print("Invalid token", err)
+            return None
     

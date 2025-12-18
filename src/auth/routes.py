@@ -2,10 +2,11 @@ from fastapi import HTTPException, status, APIRouter, Depends
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from src.db.main import get_session
-from src.users.model import User
+from src.users.model import User, UserPublic
 from src.auth.service import AuthService
 from src.auth.dependencies.local_auth import validate as validate_local
-from src.auth.dependencies.dependencies import AccessTokenBearer, RefreshTokenBearer 
+from src.auth.dependencies.token_bearer import AccessTokenBearer, RefreshTokenBearer
+from src.errors import UserNotFoundError
 
 auth_router = APIRouter()
 access_token_bearer = AccessTokenBearer()
@@ -32,8 +33,11 @@ async def logout(
     session: AsyncSession = Depends(get_session),
     payload: dict = Depends(access_token_bearer)
 ):
-    auth_service = AuthService(session)
-    return await auth_service.logout(payload)
+    try:
+        auth_service = AuthService(session)
+        return await auth_service.logout(payload)
+    except UserNotFoundError:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
 
 @auth_router.post("/refresh")
@@ -41,11 +45,14 @@ async def refresh(
     session: AsyncSession = Depends(get_session),
     payload: dict = Depends(refresh_token_bearer)
 ):
-    auth_service = AuthService(session)
-    return await auth_service.refresh(payload)
+    try:
+        auth_service = AuthService(session)
+        return await auth_service.refresh(payload)
+    except UserNotFoundError:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
 
-@auth_router.get("/me")
+@auth_router.get("/me", response_model=UserPublic)
 async def get_me(
     session: AsyncSession = Depends(get_session),
     payload: dict = Depends(access_token_bearer)
