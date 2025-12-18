@@ -4,9 +4,10 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from src.db.main import get_session
 from src.users.model import User, UserPublic
 from src.auth.service import AuthService
-from src.auth.dependencies.local_auth import validate as validate_local
-from src.auth.dependencies.token_bearer import AccessTokenBearer, RefreshTokenBearer
+from src.auth.dependencies import LocalAuth, AccessTokenBearer, RefreshTokenBearer
 from src.errors import UserNotFoundError
+
+local_auth = LocalAuth()
 
 auth_router = APIRouter()
 access_token_bearer = AccessTokenBearer()
@@ -14,7 +15,7 @@ refresh_token_bearer = RefreshTokenBearer()
 
 @auth_router.post("/login")
 async def login(
-    user: User = Depends(validate_local),
+    user: User = Depends(local_auth),
     session: AsyncSession = Depends(get_session)
 ):
     auth_service = AuthService(session)

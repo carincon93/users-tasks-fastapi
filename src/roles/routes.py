@@ -2,17 +2,18 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.db.main import get_session
-from src.users.model import UserPublic, UserCreate, UserUpdate
-from src.users.service import UserService
 from src.auth.dependencies import AccessTokenBearer, RoleChecker
+from src.roles.model import RolePublic, RoleCreate, RoleUpdate
+from src.roles.service import RoleService
 
-user_router = APIRouter()
+role_router = APIRouter()
 access_token_bearer = AccessTokenBearer()
 role_checker = RoleChecker(["admin"])
 
-@user_router.get(
+
+@role_router.get(
     "/",
-    response_model=list[UserPublic],
+    response_model=list[RolePublic],
     dependencies=[
         Depends(access_token_bearer),
         Depends(role_checker)
@@ -21,64 +22,65 @@ role_checker = RoleChecker(["admin"])
 async def find_all(
     session: AsyncSession = Depends(get_session),
 ):
-    return await UserService(session).find_all()
+    return await RoleService(session).find_all()
 
 
-@user_router.post(
+@role_router.post(
     "/",
-    response_model=UserPublic,
+    response_model=RolePublic,
     dependencies=[
         Depends(access_token_bearer),
         Depends(role_checker)
     ]
 )
 async def create(
-    user: UserCreate,
+    role: RoleCreate,
     session: AsyncSession = Depends(get_session),
 ):
-    return await UserService(session).create(user)
+    return await RoleService(session).create(role)
 
 
-@user_router.get(
-    "/{user_id}",
-    response_model=UserPublic,
+@role_router.get(
+    "/{role_id}",
+    response_model=RolePublic,
     dependencies=[
         Depends(access_token_bearer),
         Depends(role_checker)
     ]
 )
 async def find_one(
-    user_id: str,
+    role_id: str,
     session: AsyncSession = Depends(get_session),
 ):
-    return await UserService(session).find_one(user_id)
-    
+    return await RoleService(session).find_one(role_id)
 
-@user_router.put(
-    "/{user_id}",
-    response_model=UserPublic,
+
+@role_router.put(
+    "/{role_id}",
+    response_model=RolePublic,
     dependencies=[
         Depends(access_token_bearer),
         Depends(role_checker)
     ]
 )
 async def update(
-    user_id: str, 
-    user: UserUpdate,
+    role_id: str,
+    role: RoleUpdate,
     session: AsyncSession = Depends(get_session),
 ):
-    return await UserService(session).update(user_id, user)
+    return await RoleService(session).update(role_id, role)
 
 
-@user_router.delete(
-    "/{user_id}",
+@role_router.delete(
+    "/{role_id}",
     dependencies=[
         Depends(access_token_bearer),
         Depends(role_checker)
     ]
 )
 async def delete(
-    user_id: str,
+    role_id: str,
     session: AsyncSession = Depends(get_session),
+    payload: dict = Depends(access_token_bearer),
 ):
-    return await UserService(session).delete(user_id)
+    return await RoleService(session).delete(role_id)
