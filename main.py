@@ -1,10 +1,14 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.middleware import SlowAPIMiddleware
+from slowapi.errors import RateLimitExceeded
 
 from src.middleware import AuthMiddleware
 from src.auth.routes import auth_router
 from src.users.routes import user_router
 from src.roles.routes import role_router
 from src.tasks.routes import task_router
+from src.core.limiter import limiter
 
 version_prefix="/api/v1"
 
@@ -17,6 +21,10 @@ def bootstrap():
     app.include_router(task_router, prefix=f"{version_prefix}/tasks", tags=["Tasks"])
     app.include_router(user_router, prefix=f"{version_prefix}/users", tags=["Users"])
     app.include_router(role_router, prefix=f"{version_prefix}/roles", tags=["Roles"])
+
+    app.state.limiter = limiter
+    app.add_exception_handler(RateLimitExceeded, handler=_rate_limit_exceeded_handler)
+    app.add_middleware(SlowAPIMiddleware)
 
     # app.add_middleware(AuthMiddleware)
     return app

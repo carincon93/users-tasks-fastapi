@@ -13,6 +13,7 @@ auth_router = APIRouter()
 access_token_bearer = AccessTokenBearer()
 refresh_token_bearer = RefreshTokenBearer()
 
+
 @auth_router.post("/login")
 async def login(
     user: User = Depends(local_auth),
