@@ -41,11 +41,17 @@ class UserPublic(SQLModel):
     id: UUID
     username: str
     email: str
-    # roles: list[Role] = Field(default_factory=list)
     
 
 class UserUpdate(SQLModel):
     username: Optional[str] = None
     email: Optional[str] = None
     password: Optional[str] = None
+
+
+class PaginatedUsers(SQLModel):
+    count: int
+    next: Optional[str] = None
+    previous: Optional[str] = None
+    results: list[UserPublic]
 

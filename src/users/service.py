@@ -1,4 +1,4 @@
-from sqlmodel import select
+from sqlmodel import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from pwdlib import PasswordHash
 from uuid import UUID
@@ -12,10 +12,23 @@ class UserService:
         self.session = session
 
 
-    async def find_all(self):
-        statement = select(User)
-        db_users = await self.session.execute(statement=statement)
-        return db_users.scalars().all()
+    async def find_all(self, limit: int, offset: int):
+        data_stmt = (
+            select(User)
+            .order_by(User.id)
+            .limit(limit)
+            .offset(offset)
+        )
+
+        count_stmt = select(func.count(User.id))
+
+        data_result = await self.session.execute(data_stmt)
+        count_result = await self.session.execute(count_stmt)
+
+        return {
+            "results": data_result.scalars().all(),
+            "count": count_result.scalar_one(),
+        }
 
 
     async def create(self, data: UserCreate):

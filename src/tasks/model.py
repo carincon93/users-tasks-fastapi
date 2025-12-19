@@ -37,3 +37,10 @@ class TaskUpdate(SQLModel):
     description: Optional[str] = None
     completed: Optional[bool] = None
 
+
+class PaginatedTasks(SQLModel):
+    count: int
+    next: Optional[str] = None
+    previous: Optional[str] = None
+    results: list[TaskPublic]
+

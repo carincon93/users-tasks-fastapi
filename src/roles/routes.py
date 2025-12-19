@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.db.main import get_session
+from src.core.db import get_session
 from src.auth.dependencies import AccessTokenBearer, RoleChecker
 from src.roles.model import RolePublic, RoleCreate, RoleUpdate
 from src.roles.service import RoleService

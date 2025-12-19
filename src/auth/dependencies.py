@@ -11,7 +11,7 @@ import jwt
 
 from config import JWT_ACCESS_TOKEN_SECRET, ALGORITHM, JWT_REFRESH_TOKEN_SECRET
 from src.users.model import User
-from src.db.main import get_session
+from src.core.db import get_session
 
 password_hash = PasswordHash.recommended()
 

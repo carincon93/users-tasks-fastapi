@@ -4,7 +4,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import select
 from jwt.exceptions import InvalidTokenError
 
-from src.db.main import get_session
+from src.core.db import get_session
 from src.users.model import User
 from src.auth.service import AuthService
 

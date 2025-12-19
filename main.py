@@ -9,8 +9,7 @@ from src.users.routes import user_router
 from src.roles.routes import role_router
 from src.tasks.routes import task_router
 from src.core.limiter import limiter
-
-version_prefix="/api/v1"
+from src.core.config import version_prefix
 
 def bootstrap():
     app = FastAPI(

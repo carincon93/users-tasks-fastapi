@@ -1,4 +1,4 @@
-from sqlmodel import select
+from sqlmodel import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import HTTPException, status
 # from uuid import uuid4
@@ -11,10 +11,30 @@ class TaskService:
         self.current_user_id = current_user_id 
 
 
-    async def find_all(self):
-        statement = select(Task).where(Task.user_id == self.current_user_id)
-        db_tasks = await self.session.execute(statement=statement)
-        return db_tasks.scalars().all()
+    async def find_all(self, limit: int, offset: int, title: str = None, completed: bool = None):
+        data_stmt = (
+            select(Task)
+            .where(Task.user_id == self.current_user_id)
+            .order_by(Task.id)
+            .limit(limit)
+            .offset(offset)
+        )
+
+        if title:
+            data_stmt = data_stmt.where(Task.title.contains(title))
+
+        if completed is not None:
+            data_stmt = data_stmt.where(Task.completed == completed)
+
+        count_stmt = select(func.count(Task.id))
+
+        data_result = await self.session.execute(data_stmt)
+        count_result = await self.session.execute(count_stmt)
+
+        return {
+            "results": data_result.scalars().all(),
+            "count": count_result.scalar_one(),
+        }
 
 
     async def create(self, task: TaskCreate):
