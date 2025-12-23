@@ -3,8 +3,8 @@ import os
 
 load_dotenv()
 
-HOST=os.getenv("HOST")
-PORT=os.getenv("PORT")
+API_URL=os.getenv("API_URL")
+API_PORT=os.getenv("API_PORT")
 
 POSTGRES_DB_CONNECTION=os.getenv("POSTGRES_DB_CONNECTION")
 

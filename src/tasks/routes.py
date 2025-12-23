@@ -5,7 +5,7 @@ from src.core.db import get_session
 from src.auth.dependencies import AccessTokenBearer, RoleChecker
 from src.tasks.model import TaskPublic, TaskCreate, TaskUpdate, PaginatedTasks
 from src.tasks.service import TaskService
-from src.core.config import HOST, PORT, version_prefix
+from src.core.config import API_URL, API_PORT, version_prefix
 from src.core.utils import paginate
 
 task_router = APIRouter()
@@ -48,12 +48,12 @@ async def find_all(
     return {
         "count": count,
         "next": (
-            f"{HOST}:{PORT}{version_prefix}/tasks?offset={next_offset}&limit={next_limit}"
+            f"{API_URL}:{API_PORT}{version_prefix}/tasks?offset={next_offset}&limit={next_limit}"
             if next_offset is not None
             else None
         ),
         "previous": (
-            f"{HOST}:{PORT}{version_prefix}/tasks?offset={prev_offset}&limit={prev_limit}"
+            f"{API_URL}:{PORT}{version_prefix}/tasks?offset={prev_offset}&limit={prev_limit}"
             if prev_offset is not None
             else None
         ),
