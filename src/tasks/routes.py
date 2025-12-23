@@ -5,7 +5,8 @@ from src.core.db import get_session
 from src.auth.dependencies import AccessTokenBearer, RoleChecker
 from src.tasks.model import TaskPublic, TaskCreate, TaskUpdate, PaginatedTasks
 from src.tasks.service import TaskService
-from src.core.config import version_prefix
+from src.core.config import HOST, PORT, version_prefix
+from src.core.utils import paginate
 
 task_router = APIRouter()
 access_token_bearer = AccessTokenBearer()
@@ -35,20 +36,24 @@ async def find_all(
         completed=completed,
     )
 
+    pagination = paginate(offset=offset, limit=limit, count=data["count"])
+
     count = data["count"]
 
-    next_offset = offset + limit if offset + limit < count else None
-    prev_offset = offset - limit if offset > 0 else None
-
+    next_offset = pagination["next"]["offset"]
+    next_limit = pagination["next"]["limit"]
+    prev_offset = pagination["previous"]["offset"]
+    prev_limit = pagination["previous"]["limit"]
+        
     return {
         "count": count,
         "next": (
-            f"{version_prefix}/tasks?limit={limit}&offset={next_offset}"
+            f"{HOST}:{PORT}{version_prefix}/tasks?offset={next_offset}&limit={next_limit}"
             if next_offset is not None
             else None
         ),
         "previous": (
-            f"{version_prefix}/tasks?limit={limit}&offset={prev_offset}"
+            f"{HOST}:{PORT}{version_prefix}/tasks?offset={prev_offset}&limit={prev_limit}"
             if prev_offset is not None
             else None
         ),

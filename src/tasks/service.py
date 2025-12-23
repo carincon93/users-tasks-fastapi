@@ -16,9 +16,11 @@ class TaskService:
             select(Task)
             .where(Task.user_id == self.current_user_id)
             .order_by(Task.id)
-            .limit(limit)
             .offset(offset)
         )
+
+        if limit:
+            data_stmt = data_stmt.limit(limit)
 
         if title:
             data_stmt = data_stmt.where(Task.title.contains(title))
