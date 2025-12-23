@@ -9,7 +9,7 @@ from fastapi import Depends
 from jwt.exceptions import InvalidTokenError
 import jwt
 
-from config import JWT_ACCESS_TOKEN_SECRET, ALGORITHM, JWT_REFRESH_TOKEN_SECRET
+from src.core.config import JWT_ACCESS_TOKEN_SECRET, ALGORITHM, JWT_REFRESH_TOKEN_SECRET
 from src.users.model import User
 from src.core.db import get_session
 

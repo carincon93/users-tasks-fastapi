@@ -2,7 +2,7 @@ from pwdlib import PasswordHash
 from datetime import datetime, timedelta, timezone
 import jwt
 
-from config import ALGORITHM
+from src.core.config import ALGORITHM
 
 password_hash = PasswordHash.recommended()
 

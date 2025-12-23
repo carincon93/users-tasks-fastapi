@@ -2,7 +2,7 @@ from sqlmodel import SQLModel
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 from typing import AsyncGenerator
 
-from config import POSTGRES_DB_CONNECTION
+from src.core.config import POSTGRES_DB_CONNECTION
 
 async_engine = create_async_engine(
     url=POSTGRES_DB_CONNECTION,

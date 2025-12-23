@@ -7,7 +7,7 @@ from jwt.exceptions import InvalidTokenError
 import jwt
 import json
 
-from config import ALGORITHM, JWT_ACCESS_TOKEN_SECRET, JWT_ACCESS_TOKEN_EXPIRES_IN, JWT_REFRESH_TOKEN_SECRET, JWT_REFRESH_TOKEN_EXPIRES_IN
+from src.core.config import ALGORITHM, JWT_ACCESS_TOKEN_SECRET, JWT_ACCESS_TOKEN_EXPIRES_IN, JWT_REFRESH_TOKEN_SECRET, JWT_REFRESH_TOKEN_EXPIRES_IN
 from src.auth.dependencies import AccessTokenBearer
 from src.auth.utils import create_token
 from src.users.model import User, UserPublic

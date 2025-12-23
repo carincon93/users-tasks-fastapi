@@ -1,1 +1,17 @@
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+HOST=os.getenv("HOST")
+PORT=os.getenv("PORT")
+
+POSTGRES_DB_CONNECTION=os.getenv("POSTGRES_DB_CONNECTION")
+
+ALGORITHM=os.getenv("ALGORITHM")
+JWT_ACCESS_TOKEN_SECRET=os.getenv("JWT_ACCESS_TOKEN_SECRET")
+JWT_ACCESS_TOKEN_EXPIRES_IN=os.getenv("JWT_ACCESS_TOKEN_EXPIRES_IN")
+JWT_REFRESH_TOKEN_SECRET=os.getenv("JWT_REFRESH_TOKEN_SECRET")
+JWT_REFRESH_TOKEN_EXPIRES_IN=os.getenv("JWT_REFRESH_TOKEN_EXPIRES_IN")
+
 version_prefix="/api/v1"
