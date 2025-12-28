@@ -15,7 +15,7 @@ class TaskService:
         data_stmt = (
             select(Task)
             .where(Task.user_id == self.current_user_id)
-            .order_by(str(Task.id))
+            .order_by(col(Task.id))
             .offset(offset)
         )
 

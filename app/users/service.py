@@ -1,4 +1,4 @@
-from sqlmodel import select, func
+from sqlmodel import select, col, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from pwdlib import PasswordHash
 from uuid import UUID
@@ -16,7 +16,7 @@ class UserService:
     async def find_all(self, limit: int, offset: int):
         data_stmt = (
             select(User)
-            .order_by(str(User.id))
+            .order_by(col(User.id))
             .limit(limit)
             .offset(offset)
         )
