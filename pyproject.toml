@@ -1,0 +1,37 @@
+[project]
+name = "users-tasks-fastapi"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "asyncio",
+    "asyncpg",
+    "db-dtypes",
+    "fastapi[standard]",
+    "google-adk",
+    "google-auth",
+    "google-cloud-bigquery",
+    "numpy",
+    "openpyxl",
+    "pandas",
+    "pandas-gbq",
+    "psycopg2-binary",
+    "pydantic",
+    "pyjwt",
+    "pwdlib[argon2]",
+    "python-dotenv",
+    "requests",
+    "sqlmodel",
+    "slowapi",
+    "uuid",
+    "uvicorn"
+]
+
+[tool]
+
+[tool.pyrefly]
+project-includes = [
+    "**/*.py*",
+    "**/*.ipynb",
+]

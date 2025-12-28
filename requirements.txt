@@ -16,5 +16,6 @@ pwdlib[argon2]
 python-dotenv
 requests
 sqlmodel
+slowapi
 uuid
 uvicorn
