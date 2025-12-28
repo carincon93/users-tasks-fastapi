@@ -2,7 +2,7 @@ from fastapi import HTTPException, status, APIRouter, Depends
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from ..core.db import get_session
-from ..users.model import User, UserPublic
+from ..users.model import UserPublic
 from ..auth.service import AuthService
 from ..auth.dependencies import LocalAuth, AccessTokenBearer, RefreshTokenBearer
 from ..errors import UserNotFoundError

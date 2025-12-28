@@ -30,7 +30,6 @@ async def find_all(
 ):
     current_user_id = payload["sub"]
 
-    
     data = await TaskService(session, current_user_id).find_all(
         limit=limit,
         offset=offset,
