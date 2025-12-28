@@ -1,11 +1,14 @@
 from sqlmodel.main import Relationship
 from sqlmodel import Field, SQLModel
 from uuid import uuid4, UUID
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 
-from ..roles.model import Role
+if TYPE_CHECKING:
+    from ..roles.model import Role
 
 class UsersRoles(SQLModel, table=True):
+    # pyrefly: ignore [bad-override]
+    __tablename__ = "users_roles"
     user_id: UUID = Field(
         foreign_key="users.id",
         primary_key=True,
@@ -29,8 +32,8 @@ class User(UserBase, table=True):
         default_factory=uuid4,
         primary_key=True,
     )
-    refresh_token_hash: Optional[bytes | str] = Field(default=None, nullable=True)
-    roles: list[Role] = Relationship(back_populates="users", link_model=UsersRoles)
+    refresh_token_hash: Optional[str] = Field(default=None, nullable=True)
+    roles: list["Role"] = Relationship(back_populates="users", link_model=UsersRoles)
 
 
 class UserCreate(SQLModel):
